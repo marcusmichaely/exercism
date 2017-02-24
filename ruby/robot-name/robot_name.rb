@@ -3,37 +3,30 @@ module BookKeeping
 end
 
 class Robot
-  @@robots = []
+  @names = []
+  CHARS = [*'A'..'Z'].freeze
+  DIGITS = [*'0'..'9'].freeze
+  attr_reader :name
 
   def initialize
-    @name = ''
-  end
-
-  def name
-    return @name unless @name.empty?
-    tmp = tmp_name while check_name_already_exists(tmp)
-    @@robots << tmp
-    @name = tmp
+    @name = Robot.generate_name
+    self.class.register_name(@name)
   end
 
   def reset
-    @name = ''
+    @name = Robot.generate_name
   end
 
-  def tmp_name
-    char_array = [*'A'..'Z']
-    2.times do
-      @name << char_array[rand(26)]
+  def self.generate_name
+    loop do
+      chars = Array.new(2) { CHARS.sample }
+      digits = Array.new(3) { DIGITS.sample }
+      name = [*chars, *digits].join
+      return name unless @names.include?(name)
     end
-    3.times do
-      @name << rand(9).to_s
-    end
-    name.to_s
   end
 
-  def check_name_already_exists(name)
-    @@robots.include?(name)
+  def self.register_name(name)
+    @names << name
   end
-
-  private :tmp_name, :check_name_already_exists
 end
